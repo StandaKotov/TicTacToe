@@ -2,96 +2,117 @@
 {
     class Program
     {
-        // The board is represented by a char array
-        // Доска представлена массивом символов
         static char[] board = { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-        
         static int position;
-        
-        // The current player is represented by a char
-        // Текущий игрок представлен символом
         static char currentPlayer = 'X';
 
         static void Main(string[] args)
         {
-            // The game ends when the game is won
-            // Игра заканчивается, когда игра выиграна
             bool gameWon = false;
 
-            // Loop until the game is won
-            // Цикл до выигрыша игры
             while (!gameWon)
             {
-                // Draw the board, get a position, and make a move 
-                // Нарисовать доску, получить позицию и сделать ход
                 DrawBoard();
                 position = GetPosition();
                 if (IsValidMove())
                 {
                     MakeMove();
-                    
-                    // Check if the game is won and switch the player
-                    // Проверить, выиграл ли игрок и переключить игрока
                     gameWon = CheckWin();
                     if (!gameWon)
                         SwitchPlayer();
                 }
                 else
                 {
-                    // The move was invalid, so ask again
-                    // Ход был недействителен, поэтому спросите еще раз
-                    
+                    Console.WriteLine("Invalid move. Please try again.");
+                }
+
+                if (!gameWon && IsBoardFull())
+                {
+                    Console.WriteLine("It's a draw! Nobody wins.");
+                    break;
                 }
             }
 
-            // Draw the board one last time and print the winner
-            // Нарисуйте доску еще раз и напечатайте победителя
             DrawBoard();
-
-            // Print the winner
-            // Напечатать победителя
+            if (gameWon)
+                Console.WriteLine($"Player {currentPlayer} wins!");
         }
 
         static void DrawBoard()
         {
-            // Clear the console and draw the board
-            // Очистить консоль и нарисовать доску
-            
+            Console.Clear();
+            Console.WriteLine(" " + board[0] + " | " + board[1] + " | " + board[2]);
+            Console.WriteLine("---|---|---");
+            Console.WriteLine(" " + board[3] + " | " + board[4] + " | " + board[5]);
+            Console.WriteLine("---|---|---");
+            Console.WriteLine(" " + board[6] + " | " + board[7] + " | " + board[8]);
         }
 
         static int GetPosition()
         {
-            // Ask the current player for a position
-            // Спросить текущего игрока о позиции
+            int pos = 0;
+            bool validInput = false;
 
+            while (!validInput)
+            {
+                Console.WriteLine($"Player {currentPlayer}, enter your move (1-9):");
+                if (int.TryParse(Console.ReadLine(), out pos))
+                {
+                    if (pos >= 1 && pos <= 9 && board[pos - 1] != 'X' && board[pos - 1] != 'O')
+                    {
+                        validInput = true;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid move. Please enter a number between 1 and 9 that is not already taken.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please enter a valid number between 1 and 9.");
+                }
+            }
+
+            return pos;
         }
 
         static bool IsValidMove()
         {
-            // Check if the position is valid
-            // Проверить, действительна ли позиция
-            
+            return position >= 1 && position <= 9 && board[position - 1] != 'X' && board[position - 1] != 'O';
         }
 
         static void MakeMove()
         {
-            // Make the move
-            // Сделать ход
-            
+            board[position - 1] = currentPlayer;
         }
 
         static bool CheckWin()
         {
-            // Check if the current player has won
-            // Проверить, выиграл ли текущий игрок
-
+            return (board[0] == currentPlayer && board[1] == currentPlayer && board[2] == currentPlayer) ||
+                   (board[3] == currentPlayer && board[4] == currentPlayer && board[5] == currentPlayer) ||
+                   (board[6] == currentPlayer && board[7] == currentPlayer && board[8] == currentPlayer) ||
+                   (board[0] == currentPlayer && board[3] == currentPlayer && board[6] == currentPlayer) ||
+                   (board[1] == currentPlayer && board[4] == currentPlayer && board[7] == currentPlayer) ||
+                   (board[2] == currentPlayer && board[5] == currentPlayer && board[8] == currentPlayer) ||
+                   (board[0] == currentPlayer && board[4] == currentPlayer && board[8] == currentPlayer) ||
+                   (board[2] == currentPlayer && board[4] == currentPlayer && board[6] == currentPlayer);
         }
 
         static void SwitchPlayer()
         {
-            // Switch the current player
-            // Переключить текущего игрока
-            
+            currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+        }
+
+        static bool IsBoardFull()
+        {
+            foreach (char cell in board)
+            {
+                if (cell != 'X' && cell != 'O')
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }
